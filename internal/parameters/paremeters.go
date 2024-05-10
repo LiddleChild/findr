@@ -23,7 +23,7 @@ func Parse(args []string) (string, *arguments.Argument, errorwrapper.ErrorWrappe
 	}
 
 	arg := arguments.New()
-	arg.SetWorkingDirectory(pwd)
+	arg.WorkingDirectory = pwd
 
 	for cursor < len(args) {
 		switch args[cursor] {

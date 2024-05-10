@@ -26,14 +26,14 @@ func MaxDepthOption(arg *arguments.Argument, args []string, cursor *int) errorwr
 			"-mx: value must be greater or equal to zero")
 	}
 
-	arg.SetMaxDepth(val)
+	arg.MaxDepth = val
 	*cursor += 2
 
 	return nil
 }
 
 func ContentSearchOption(arg *arguments.Argument, cursor *int) {
-	arg.SetContentSearch(true)
+	arg.ContentSearch = true
 	*cursor += 1
 }
 
@@ -54,7 +54,7 @@ func WorkingDirectoryOption(arg *arguments.Argument, args []string, cursor *int)
 			fmt.Sprintf("-d: %v is not a directory", val))
 	}
 
-	arg.SetWorkingDirectory(val)
+	arg.WorkingDirectory = val
 	*cursor += 2
 
 	return nil
