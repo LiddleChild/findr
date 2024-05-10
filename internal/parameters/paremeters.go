@@ -36,6 +36,13 @@ func Parse(args []string) (string, *arguments.Argument, errorwrapper.ErrorWrappe
 					err,
 					"-mx: value must be an integer")
 			}
+			
+			if val < 0 {
+				return "", nil, errorwrapper.NewWithMessage(
+					errorwrapper.Argument,
+					err,
+					"-mx: value must be greater or equal to zero")
+			}
 
 			arg.SetMaxDepth(val)
 			cursor += 2
