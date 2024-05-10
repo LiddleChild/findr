@@ -3,7 +3,6 @@ package parameters
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/LiddleChild/findr/internal/arguments"
@@ -12,7 +11,7 @@ import (
 
 func Parse(args []string) (string, *arguments.Argument, errorwrapper.ErrorWrapper) {
 	cursor := 0
-	for args[cursor][0] != '-' {
+	for cursor < len(args) && args[cursor][0] != '-' {
 		cursor++
 	}
 
@@ -29,46 +28,16 @@ func Parse(args []string) (string, *arguments.Argument, errorwrapper.ErrorWrappe
 	for cursor < len(args) {
 		switch args[cursor] {
 		case "-mx":
-			val, err := strconv.Atoi(args[cursor+1])
-			if err != nil {
-				return "", nil, errorwrapper.NewWithMessage(
-					errorwrapper.Argument,
-					err,
-					"-mx: value must be an integer")
+			werr := MaxDepthOption(arg, args, &cursor)
+			if werr != nil {
+				return "", nil, werr
 			}
-			
-			if val < 0 {
-				return "", nil, errorwrapper.NewWithMessage(
-					errorwrapper.Argument,
-					err,
-					"-mx: value must be greater or equal to zero")
-			}
-
-			arg.SetMaxDepth(val)
-			cursor += 2
 
 		case "-c":
-			arg.SetContentSearch(true)
-			cursor += 1
+			ContentSearchOption(arg, &cursor)
 
 		case "-d":
-			val := args[cursor+1]
-			info, err := os.Stat(val)
-
-			if err != nil {
-				return "", nil, errorwrapper.NewWithMessage(
-					errorwrapper.Argument,
-					err,
-					fmt.Sprintf("-d: %v: no such directory", val))
-			} else if !info.IsDir() {
-				return "", nil, errorwrapper.NewWithMessage(
-					errorwrapper.Argument,
-					err,
-					fmt.Sprintf("-d: %v is not a directory", val))
-			}
-
-			arg.SetWorkingDirectory(val)
-			cursor += 2
+			WorkingDirectoryOption(arg, args, &cursor)
 
 		default:
 			return "", nil, errorwrapper.New(
