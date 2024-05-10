@@ -9,6 +9,9 @@ const (
 
 type ErrorWrapper interface {
 	Unwrap() (WrapperType, string, error)
+	Type() WrapperType
+	Message() string
+	Error() error
 }
 
 type errorWrapper struct {
@@ -31,4 +34,16 @@ func NewWithMessage(errorType WrapperType, error error, message string) ErrorWra
 
 func (err *errorWrapper) Unwrap() (WrapperType, string, error) {
 	return err.errorType, err.message, err.error
+}
+
+func (err *errorWrapper) Type() WrapperType {
+	return err.errorType
+}
+
+func (err *errorWrapper) Message() string {
+	return err.message
+}
+
+func (err *errorWrapper) Error() error {
+	return err.error
 }
