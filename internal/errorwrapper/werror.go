@@ -5,6 +5,7 @@ type WrapperType string
 const (
 	Argument  WrapperType = "Argument"
 	Parameter WrapperType = "Parameter"
+	Core      WrapperType = "Core"
 )
 
 type ErrorWrapper interface {
