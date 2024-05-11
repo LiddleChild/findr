@@ -5,11 +5,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/LiddleChild/findr/internal/arguments"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
+	"github.com/LiddleChild/findr/internal/models"
 )
 
-func Parse(args []string) (string, *arguments.Argument, errorwrapper.ErrorWrapper) {
+func Parse(args []string) (string, *models.Argument, errorwrapper.ErrorWrapper) {
 	cursor := 0
 	for cursor < len(args) && args[cursor][0] != '-' {
 		cursor++
@@ -22,7 +22,7 @@ func Parse(args []string) (string, *arguments.Argument, errorwrapper.ErrorWrappe
 		os.Exit(1)
 	}
 
-	arg := arguments.New()
+	arg := models.DefaultArgument()
 	arg.WorkingDirectory = pwd
 
 	for cursor < len(args) {

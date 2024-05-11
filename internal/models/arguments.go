@@ -1,4 +1,4 @@
-package arguments
+package models
 
 type Argument struct {
 	MaxDepth         int
@@ -6,7 +6,7 @@ type Argument struct {
 	WorkingDirectory string
 }
 
-func New() *Argument {
+func DefaultArgument() *Argument {
 	return &Argument{
 		MaxDepth:         5,
 		ContentSearch:    false,
