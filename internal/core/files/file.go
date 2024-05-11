@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"github.com/LiddleChild/findr/internal/core/engine"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 	"github.com/LiddleChild/findr/internal/models"
 	"github.com/LiddleChild/findr/utils"
@@ -23,6 +23,8 @@ func Traverse(query string, arg *models.Argument) errorwrapper.ErrorWrapper {
 		depth: 0,
 	})
 
+	pattern := engine.CreatePattern(query)
+
 	for st.Size() > 0 {
 		dir := st.Top()
 		st.Pop()
@@ -36,7 +38,7 @@ func Traverse(query string, arg *models.Argument) errorwrapper.ErrorWrapper {
 		}
 
 		for _, e := range entries {
-			if strings.Contains(e.Name(), query) {
+			if _, ok := pattern.Match(e.Name()); ok {
 				fmt.Println(filepath.Join(dir.path, e.Name()))
 			}
 

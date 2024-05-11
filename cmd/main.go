@@ -36,5 +36,10 @@ func main() {
 		os.Exit(0)
 	}
 
-	file.Traverse(query, arg)
+	werr = file.Traverse(query, arg)
+	if werr != nil {
+		_, msg, _ := werr.Unwrap()
+		fmt.Println(msg)
+		os.Exit(0)
+	}
 }
