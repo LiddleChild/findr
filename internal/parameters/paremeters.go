@@ -37,7 +37,10 @@ func Parse(args []string) (string, *arguments.Argument, errorwrapper.ErrorWrappe
 			ContentSearchOption(arg, &cursor)
 
 		case "-d":
-			WorkingDirectoryOption(arg, args, &cursor)
+			werr := WorkingDirectoryOption(arg, args, &cursor)
+			if werr != nil {
+				return "", nil, werr
+			}
 
 		default:
 			return "", nil, errorwrapper.New(
