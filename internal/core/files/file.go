@@ -1,8 +1,10 @@
 package file
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/LiddleChild/findr/internal/core/engine"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
@@ -40,7 +42,6 @@ func Traverse(query string, arg *models.Argument) errorwrapper.ErrorWrapper {
 		for _, e := range entries {
 			path := filepath.Join(dir.path, e.Name())
 
-			content := e.Name()
 			if arg.ContentSearch && !e.IsDir() {
 				bs, err := os.ReadFile(path)
 				if err != nil {
@@ -49,13 +50,26 @@ func Traverse(query string, arg *models.Argument) errorwrapper.ErrorWrapper {
 						err,
 						"error occured while reading files")
 				}
+				content := string(bs)
 
-				content = string(bs)
-			}
+				index, ok := pattern.Match(content)
+				if ok {
+					mln := utils.ToMultiline(content)
 
-			_, ok := pattern.Match(content)
-			if ok {
-				utils.HighlightedPrintln(content, query, color.FgRed)
+					red := color.New(color.FgRed).SprintFunc()
+					underline := color.New(color.Underline).SprintFunc()
+
+					fmt.Println(underline(path))
+					for _, i := range index {
+						ln, col, s := mln.GetSnippet(i)
+						fmt.Printf("Ln %d, Col %d: %s\n", ln, col, strings.TrimSpace(strings.ReplaceAll(s, query, red(query))))
+					}
+				}
+			} else {
+				red := color.New(color.FgRed).SprintFunc()
+				if strings.Contains(path, query) {
+					fmt.Println(strings.TrimSpace(strings.ReplaceAll(path, query, red(query))))
+				}
 			}
 
 			if e.IsDir() && dir.depth < arg.MaxDepth {
