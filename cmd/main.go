@@ -8,19 +8,6 @@ import (
 	"github.com/LiddleChild/findr/internal/core"
 )
 
-/*
-
-usage: findr <query> <options>
-
-options
--help
--mx <max-depth>  : set max directory depth defaults to 5
--c               : search for content in files
--d <dir>         : set search root directory
-
-
-*/
-
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("usage: findr <query> <options>")
@@ -28,7 +15,6 @@ func main() {
 	}
 
 	params := os.Args[1:]
-
 	query, arg, werr := cli.Parse(params)
 	if werr != nil {
 		_, msg, _ := werr.Unwrap()

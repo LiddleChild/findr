@@ -5,10 +5,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/LiddleChild/findr/internal/core"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
 
-func Parse(args []string) (string, *Argument, errorwrapper.ErrorWrapper) {
+func Parse(args []string) (string, *core.Argument, errorwrapper.ErrorWrapper) {
 	cursor := 0
 	for cursor < len(args) && args[cursor][0] != '-' {
 		cursor++
@@ -21,30 +22,30 @@ func Parse(args []string) (string, *Argument, errorwrapper.ErrorWrapper) {
 		os.Exit(1)
 	}
 
-	arg := DefaultArgument()
+	arg := core.DefaultArgument()
 	arg.WorkingDirectory = pwd
 
 	for cursor < len(args) {
-		switch args[cursor] {
-		case "-mx":
-			werr := MaxDepthOption(arg, args, &cursor)
-			if werr != nil {
-				return "", nil, werr
-			}
+		key := args[cursor]
 
-		case "-c":
-			ContentSearchOption(arg, &cursor)
+		cursor++
+		start := cursor
+		for cursor < len(args) && args[cursor][0] != '-' {
+			cursor++
+		}
 
-		case "-d":
-			werr := WorkingDirectoryOption(arg, args, &cursor)
-			if werr != nil {
-				return "", nil, werr
-			}
+		value := args[start:cursor]
 
-		default:
+		handler, ok := MappedOptionHandler[key]
+		if !ok {
 			return "", nil, errorwrapper.New(
-				errorwrapper.Parameter,
-				fmt.Errorf("unknown argument: %v", args[cursor]))
+				errorwrapper.Parsing,
+				fmt.Errorf("unknown option: %v", key))
+		}
+
+		werr := handler(arg, value)
+		if werr != nil {
+			return "", nil, werr
 		}
 	}
 

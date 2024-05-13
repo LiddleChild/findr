@@ -3,6 +3,7 @@ package errorwrapper
 type WrapperType string
 
 const (
+	Parsing   WrapperType = "Parsing"
 	Argument  WrapperType = "Argument"
 	Parameter WrapperType = "Parameter"
 	Core      WrapperType = "Core"

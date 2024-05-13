@@ -1,4 +1,4 @@
-package cli
+package core
 
 type Argument struct {
 	MaxDepth         int
