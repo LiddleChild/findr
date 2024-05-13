@@ -1,4 +1,4 @@
-package file
+package core
 
 import (
 	"fmt"
@@ -6,9 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/LiddleChild/findr/internal/core/engine"
+	"github.com/LiddleChild/findr/internal/cli"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
-	"github.com/LiddleChild/findr/internal/models"
 	"github.com/LiddleChild/findr/utils"
 	"github.com/fatih/color"
 )
@@ -18,14 +17,14 @@ type dirNode struct {
 	depth int
 }
 
-func Traverse(query string, arg *models.Argument) errorwrapper.ErrorWrapper {
+func Traverse(query string, arg *cli.Argument) errorwrapper.ErrorWrapper {
 	st := utils.NewStack[dirNode]()
 	st.Push(dirNode{
 		path:  arg.WorkingDirectory,
 		depth: 0,
 	})
 
-	pattern := engine.CreatePattern(query)
+	pattern := CreatePattern(query)
 
 	for st.Size() > 0 {
 		dir := st.Top()

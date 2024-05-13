@@ -1,4 +1,4 @@
-package parameters
+package cli
 
 import (
 	"fmt"
@@ -6,10 +6,9 @@ import (
 	"strconv"
 
 	"github.com/LiddleChild/findr/internal/errorwrapper"
-	"github.com/LiddleChild/findr/internal/models"
 )
 
-func MaxDepthOption(arg *models.Argument, args []string, cursor *int) errorwrapper.ErrorWrapper {
+func MaxDepthOption(arg *Argument, args []string, cursor *int) errorwrapper.ErrorWrapper {
 	i := *cursor
 	val, err := strconv.Atoi(args[i+1])
 	if err != nil {
@@ -32,12 +31,12 @@ func MaxDepthOption(arg *models.Argument, args []string, cursor *int) errorwrapp
 	return nil
 }
 
-func ContentSearchOption(arg *models.Argument, cursor *int) {
+func ContentSearchOption(arg *Argument, cursor *int) {
 	arg.ContentSearch = true
 	*cursor += 1
 }
 
-func WorkingDirectoryOption(arg *models.Argument, args []string, cursor *int) errorwrapper.ErrorWrapper {
+func WorkingDirectoryOption(arg *Argument, args []string, cursor *int) errorwrapper.ErrorWrapper {
 	i := *cursor
 	val := args[i+1]
 	info, err := os.Stat(val)

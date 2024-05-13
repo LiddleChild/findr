@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	file "github.com/LiddleChild/findr/internal/core/files"
-	"github.com/LiddleChild/findr/internal/parameters"
+	"github.com/LiddleChild/findr/internal/cli"
+	"github.com/LiddleChild/findr/internal/core"
 )
 
 /*
@@ -29,14 +29,14 @@ func main() {
 
 	params := os.Args[1:]
 
-	query, arg, werr := parameters.Parse(params)
+	query, arg, werr := cli.Parse(params)
 	if werr != nil {
 		_, msg, _ := werr.Unwrap()
 		fmt.Printf("%v\nuse `findr --help` for more informations\n", msg)
 		os.Exit(0)
 	}
 
-	werr = file.Traverse(query, arg)
+	werr = core.Traverse(query, arg)
 	if werr != nil {
 		_, msg, _ := werr.Unwrap()
 		fmt.Println(msg)

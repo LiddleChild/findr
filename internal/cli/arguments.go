@@ -1,4 +1,4 @@
-package models
+package cli
 
 type Argument struct {
 	MaxDepth         int
