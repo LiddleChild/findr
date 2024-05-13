@@ -38,6 +38,10 @@ func Traverse(query string, arg *Argument) errorwrapper.ErrorWrapper {
 		}
 
 		for _, e := range entries {
+			if _, ok := arg.IgnoredPaths[e.Name()]; ok {
+				continue
+			}
+
 			path := filepath.Join(dir.path, e.Name())
 
 			if arg.ContentSearch && !e.IsDir() {

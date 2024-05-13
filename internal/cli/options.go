@@ -25,4 +25,5 @@ var MappedOptionHandler = map[string]OptionHandler{
 	"-mx": options.MaxDepthHandler,
 	"-c":  options.ContentSearchHandler,
 	"-d":  options.WorkingDirectoryHandler,
+	"-i":  options.IgnorePathHandler,
 }
