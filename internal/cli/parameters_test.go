@@ -37,7 +37,7 @@ func TestMaxDepth(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			_, _, werr := Parse(tc.params)
+			_, werr := Parse(tc.params)
 
 			if (werr != nil && tc.werr == nil) ||
 				(werr == nil && tc.werr != nil) {
@@ -74,7 +74,7 @@ func TestDirectory(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			_, _, werr := Parse(tc.params)
+			_, werr := Parse(tc.params)
 
 			if (werr != nil && tc.werr == nil) ||
 				(werr == nil && tc.werr != nil) {

@@ -15,14 +15,14 @@ func main() {
 	}
 
 	params := os.Args[1:]
-	query, arg, werr := cli.Parse(params)
+	arg, werr := cli.Parse(params)
 	if werr != nil {
 		_, msg, _ := werr.Unwrap()
 		fmt.Printf("%v\nuse `findr --help` for more informations\n", msg)
 		os.Exit(0)
 	}
 
-	werr = core.Traverse(query, arg)
+	werr = core.Traverse(arg)
 	if werr != nil {
 		_, msg, _ := werr.Unwrap()
 		fmt.Println(msg)

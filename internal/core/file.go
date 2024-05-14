@@ -16,14 +16,14 @@ type dirNode struct {
 	depth int
 }
 
-func Traverse(query string, arg *Argument) errorwrapper.ErrorWrapper {
+func Traverse(arg *Argument) errorwrapper.ErrorWrapper {
 	st := utils.NewStack[dirNode]()
 	st.Push(dirNode{
 		path:  arg.WorkingDirectory,
 		depth: 0,
 	})
 
-	pattern := CreatePattern(query)
+	pattern := CreatePattern(arg.Query)
 
 	for st.Size() > 0 {
 		dir := st.Top()
@@ -64,13 +64,13 @@ func Traverse(query string, arg *Argument) errorwrapper.ErrorWrapper {
 					fmt.Println(underline(path))
 					for _, i := range index {
 						ln, col, s := mln.GetSnippet(i)
-						fmt.Printf("Ln %d, Col %d: %s\n", ln, col, strings.TrimSpace(strings.ReplaceAll(s, query, red(query))))
+						fmt.Printf("Ln %d, Col %d: %s\n", ln, col, strings.TrimSpace(strings.ReplaceAll(s, arg.Query, red(arg.Query))))
 					}
 				}
 			} else {
 				red := color.New(color.FgRed).SprintFunc()
-				if strings.Contains(path, query) {
-					fmt.Println(strings.TrimSpace(strings.ReplaceAll(path, query, red(query))))
+				if strings.Contains(path, arg.Query) {
+					fmt.Println(strings.TrimSpace(strings.ReplaceAll(path, arg.Query, red(arg.Query))))
 				}
 			}
 

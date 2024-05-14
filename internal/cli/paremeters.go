@@ -9,13 +9,11 @@ import (
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
 
-func Parse(args []string) (string, *core.Argument, errorwrapper.ErrorWrapper) {
+func Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper) {
 	cursor := 0
 	for cursor < len(args) && args[cursor][0] != '-' {
 		cursor++
 	}
-
-	query := strings.Join(args[:cursor], " ")
 
 	pwd, err := os.Getwd()
 	if err != nil {
@@ -24,6 +22,7 @@ func Parse(args []string) (string, *core.Argument, errorwrapper.ErrorWrapper) {
 
 	arg := core.DefaultArgument()
 	arg.WorkingDirectory = pwd
+	arg.Query = strings.Join(args[:cursor], " ")
 
 	for cursor < len(args) {
 		key := args[cursor]
@@ -38,16 +37,16 @@ func Parse(args []string) (string, *core.Argument, errorwrapper.ErrorWrapper) {
 
 		handler, ok := MappedOptionHandler[key]
 		if !ok {
-			return "", nil, errorwrapper.New(
+			return nil, errorwrapper.New(
 				errorwrapper.Parsing,
 				fmt.Errorf("unknown option: %v", key))
 		}
 
 		werr := handler(arg, value)
 		if werr != nil {
-			return "", nil, werr
+			return nil, werr
 		}
 	}
 
-	return query, arg, nil
+	return arg, nil
 }
