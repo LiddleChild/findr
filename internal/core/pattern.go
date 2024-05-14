@@ -68,3 +68,7 @@ func (p *Pattern) Match(content string) ([]int, bool) {
 
 	return index, true
 }
+
+func (p *Pattern) Len() int {
+	return len(p.pattern)
+}

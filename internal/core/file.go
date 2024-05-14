@@ -16,6 +16,46 @@ type dirNode struct {
 	depth int
 }
 
+var pattern *Pattern
+
+func HandleFilenameSearch(path string, arg *Argument) errorwrapper.ErrorWrapper {
+	idx, ok := pattern.Match(path)
+	if ok {
+		highlighted := utils.HighlightByIndexes(path, idx, pattern.Len(), color.FgRed)
+		fmt.Printf("%s\n\n", strings.TrimSpace(highlighted))
+	}
+
+	return nil
+}
+
+func handleContentSearch(path string, _ *Argument) errorwrapper.ErrorWrapper {
+	bs, err := os.ReadFile(path)
+	if err != nil {
+		return errorwrapper.NewWithMessage(
+			errorwrapper.Core,
+			err,
+			"error occured while reading files")
+	}
+	content := string(bs)
+
+	index, ok := pattern.Match(content)
+	if ok {
+		mln := utils.ToMultiline(content)
+
+		underline := color.New(color.Underline).SprintFunc()
+
+		fmt.Println(underline(path))
+		for _, i := range index {
+			ln, col, s := mln.GetSnippet(i)
+			highlighted := utils.HighlightByIndexes(s, []int{col}, pattern.Len(), color.FgRed)
+			fmt.Printf("Ln %d, Col %d: %s\n", ln, col, strings.TrimSpace(highlighted))
+		}
+		fmt.Println()
+	}
+
+	return nil
+}
+
 func Traverse(arg *Argument) errorwrapper.ErrorWrapper {
 	st := utils.NewStack[dirNode]()
 	st.Push(dirNode{
@@ -23,7 +63,7 @@ func Traverse(arg *Argument) errorwrapper.ErrorWrapper {
 		depth: 0,
 	})
 
-	pattern := CreatePattern(arg.Query)
+	pattern = CreatePattern(arg.Query)
 
 	for st.Size() > 0 {
 		dir := st.Top()
@@ -43,42 +83,22 @@ func Traverse(arg *Argument) errorwrapper.ErrorWrapper {
 			}
 
 			path := filepath.Join(dir.path, e.Name())
-
-			if arg.ContentSearch && !e.IsDir() {
-				bs, err := os.ReadFile(path)
-				if err != nil {
-					return errorwrapper.NewWithMessage(
-						errorwrapper.Core,
-						err,
-						"error occured while reading files")
-				}
-				content := string(bs)
-
-				index, ok := pattern.Match(content)
-				if ok {
-					mln := utils.ToMultiline(content)
-
-					red := color.New(color.FgRed).SprintFunc()
-					underline := color.New(color.Underline).SprintFunc()
-
-					fmt.Println(underline(path))
-					for _, i := range index {
-						ln, col, s := mln.GetSnippet(i)
-						fmt.Printf("Ln %d, Col %d: %s\n", ln, col, strings.TrimSpace(strings.ReplaceAll(s, arg.Query, red(arg.Query))))
-					}
-				}
-			} else {
-				red := color.New(color.FgRed).SprintFunc()
-				if strings.Contains(path, arg.Query) {
-					fmt.Println(strings.TrimSpace(strings.ReplaceAll(path, arg.Query, red(arg.Query))))
-				}
-			}
-
 			if e.IsDir() && dir.depth < arg.MaxDepth {
 				st.Push(dirNode{
 					path,
 					dir.depth + 1,
 				})
+			}
+
+			var werr errorwrapper.ErrorWrapper
+			if arg.ContentSearch && !e.IsDir() {
+				werr = handleContentSearch(path, arg)
+			} else {
+				werr = HandleFilenameSearch(path, arg)
+			}
+
+			if werr != nil {
+				return werr
 			}
 		}
 	}
