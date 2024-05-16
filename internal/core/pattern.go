@@ -14,7 +14,6 @@ type Pattern struct {
 }
 
 func CreatePattern(pattern string) *Pattern {
-	pattern = strings.ToLower(pattern)
 	lps := make([]int, len(pattern))
 	i, j := 1, 0
 
@@ -40,7 +39,7 @@ func CreatePattern(pattern string) *Pattern {
 }
 
 func (p Pattern) Match(content string) []int {
-	contentRunes := []rune(strings.ToLower(content))
+	contentRunes := []rune(content)
 	indices := make([]int, 0)
 
 	i, j := 0, 0
@@ -65,7 +64,7 @@ func (p Pattern) Match(content string) []int {
 	return indices
 }
 
-func (p Pattern) MatchFile(file *os.File) ([]Snippet, error) {
+func (p Pattern) MatchFile(file *os.File, caseSensitive bool) ([]Snippet, error) {
 	snippets := make([]Snippet, 0)
 
 	reader := utils.NewReader(file)
@@ -97,7 +96,11 @@ func (p Pattern) MatchFile(file *os.File) ([]Snippet, error) {
 	}
 
 	for !reader.IsEOF() {
-		if unicode.ToLower(r) == p.pattern[j] {
+		if !caseSensitive {
+			r = unicode.ToLower(r)
+		}
+
+		if r == p.pattern[j] {
 			if j == p.Len()-1 {
 				if len(snippets) == 0 || !needResolve {
 					snippets = append(snippets, Snippet{

@@ -3,6 +3,7 @@ package core
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 	"github.com/LiddleChild/findr/utils"
@@ -22,7 +23,11 @@ func Traverse(arg *Argument) errorwrapper.ErrorWrapper {
 		depth: 0,
 	})
 
-	pattern = CreatePattern(arg.Query)
+	query := arg.Query
+	if !arg.CaseSensitive {
+		query = strings.ToLower(query)
+	}
+	pattern = CreatePattern(query)
 
 	for st.Size() > 0 {
 		dir := st.Top()

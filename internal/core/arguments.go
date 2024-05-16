@@ -6,6 +6,7 @@ type Argument struct {
 	ContentSearch    bool
 	WorkingDirectory string
 	IgnoredPaths     map[string]bool
+	CaseSensitive    bool
 }
 
 func DefaultArgument() *Argument {
@@ -15,5 +16,6 @@ func DefaultArgument() *Argument {
 		ContentSearch:    false,
 		WorkingDirectory: "",
 		IgnoredPaths:     map[string]bool{},
+		CaseSensitive:    false,
 	}
 }

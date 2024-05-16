@@ -11,6 +11,10 @@ import (
 )
 
 func HandleFilenameSearch(path string, arg *Argument) errorwrapper.ErrorWrapper {
+	if !arg.CaseSensitive {
+		path = strings.ToLower(path)
+	}
+
 	indices := pattern.Match(path)
 	if len(indices) > 0 {
 		highlighted := utils.HighlightByIndexes(path, indices, pattern.Len(), color.FgRed)
@@ -20,7 +24,7 @@ func HandleFilenameSearch(path string, arg *Argument) errorwrapper.ErrorWrapper 
 	return nil
 }
 
-func handleContentSearch(path string, _ *Argument) errorwrapper.ErrorWrapper {
+func handleContentSearch(path string, arg *Argument) errorwrapper.ErrorWrapper {
 	f, err := os.Open(path)
 	if err != nil {
 		return errorwrapper.NewWithMessage(
@@ -29,7 +33,7 @@ func handleContentSearch(path string, _ *Argument) errorwrapper.ErrorWrapper {
 			"error occured while opening file")
 	}
 
-	snippets, err := pattern.MatchFile(f)
+	snippets, err := pattern.MatchFile(f, arg.CaseSensitive)
 	if err != nil {
 		return errorwrapper.NewWithMessage(
 			errorwrapper.Core,

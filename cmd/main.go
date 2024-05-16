@@ -23,6 +23,7 @@ func main() {
 		&options.IgnorePathOption{},
 		&options.MaxDepthOption{},
 		&options.WorkingDirectoryOption{},
+		&options.CaseSensitiveOption{},
 	)
 
 	arg, werr := parser.Parse(params)
