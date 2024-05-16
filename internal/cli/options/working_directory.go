@@ -6,11 +6,23 @@ import (
 	"os"
 	"path"
 
+	"github.com/LiddleChild/findr/internal/cli"
 	"github.com/LiddleChild/findr/internal/core"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
 
-func WorkingDirectoryHandler(arg *core.Argument, values []string) errorwrapper.ErrorWrapper {
+type WorkingDirectoryOption struct{}
+
+func (opt WorkingDirectoryOption) Metadata() cli.OptionMetadata {
+	return cli.OptionMetadata{
+		Name:        "working directory",
+		Usage:       "(-d|--dir) <path>",
+		Description: "set working directory",
+		OptionNames: []string{"-d", "--dir"},
+	}
+}
+
+func (opt WorkingDirectoryOption) Handle(arg *core.Argument, values []string) errorwrapper.ErrorWrapper {
 	if len(values) < 1 {
 		return errorwrapper.New(
 			errorwrapper.Parsing,

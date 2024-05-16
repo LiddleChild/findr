@@ -10,7 +10,23 @@ import (
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
 
-func Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper) {
+type Parser struct {
+	parsers map[string]OptionHandler
+}
+
+func NewParser(options ...OptionHandler) *Parser {
+	parsers := map[string]OptionHandler{}
+
+	for _, opt := range options {
+		for _, name := range opt.Metadata().OptionNames {
+			parsers[name] = opt
+		}
+	}
+
+	return &Parser{parsers}
+}
+
+func (p Parser) Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper) {
 	cursor := 0
 	for cursor < len(args) && args[cursor][0] != '-' {
 		cursor++
@@ -45,14 +61,14 @@ func Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper) {
 
 		value := args[start:cursor]
 
-		handler, ok := MappedOptionHandler[key]
+		opt, ok := p.parsers[key]
 		if !ok {
 			return nil, errorwrapper.New(
 				errorwrapper.Parsing,
 				fmt.Errorf("unknown option: %v", key))
 		}
 
-		werr := handler(arg, value)
+		werr := opt.Handle(arg, value)
 		if werr != nil {
 			return nil, werr
 		}

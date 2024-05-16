@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/LiddleChild/findr/internal/cli"
+	"github.com/LiddleChild/findr/internal/cli/options"
 	"github.com/LiddleChild/findr/internal/core"
 )
 
@@ -14,8 +15,18 @@ func main() {
 		os.Exit(0)
 	}
 
+	// กขค int
+
 	params := os.Args[1:]
-	arg, werr := cli.Parse(params)
+
+	parser := cli.NewParser(
+		&options.ContentSearchOption{},
+		&options.IgnorePathOption{},
+		&options.MaxDepthOption{},
+		&options.WorkingDirectoryOption{},
+	)
+
+	arg, werr := parser.Parse(params)
 	if werr != nil {
 		_, msg, _ := werr.Unwrap()
 		fmt.Printf("%v\nuse `findr --help` for more informations\n", msg)

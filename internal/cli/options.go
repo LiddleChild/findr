@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"github.com/LiddleChild/findr/internal/cli/options"
 	"github.com/LiddleChild/findr/internal/core"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
@@ -19,11 +18,14 @@ options
 
 */
 
-type OptionHandler func(*core.Argument, []string) errorwrapper.ErrorWrapper
+type OptionMetadata struct {
+	Name        string
+	Usage       string
+	Description string
+	OptionNames []string
+}
 
-var MappedOptionHandler = map[string]OptionHandler{
-	"-mx": options.MaxDepthHandler,
-	"-c":  options.ContentSearchHandler,
-	"-d":  options.WorkingDirectoryHandler,
-	"-i":  options.IgnorePathHandler,
+type OptionHandler interface {
+	Metadata() OptionMetadata
+	Handle(*core.Argument, []string) errorwrapper.ErrorWrapper
 }
