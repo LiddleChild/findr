@@ -6,20 +6,24 @@ import (
 	"os"
 	"strings"
 
+	"github.com/LiddleChild/findr/internal/cli/options"
 	"github.com/LiddleChild/findr/internal/core"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
 
 type Parser struct {
-	parsers map[string]OptionHandler
+	parsers map[string]options.Handler
 }
 
-func NewParser(options ...OptionHandler) *Parser {
-	parsers := map[string]OptionHandler{}
+func NewParser(opts ...options.Handler) *Parser {
+	parsers := map[string]options.Handler{}
 
-	for _, opt := range options {
-		for _, name := range opt.Metadata().OptionNames {
-			parsers[name] = opt
+	help := &options.HelpOption{Handlers: opts}
+	opts = append(opts, help)
+
+	for _, opt := range opts {
+		for _, flag := range opt.Metadata().Flags {
+			parsers[flag] = opt
 		}
 	}
 
@@ -43,13 +47,6 @@ func (p Parser) Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper)
 	arg := core.DefaultArgument()
 	arg.WorkingDirectory = pwd
 
-	arg.Query = strings.Join(args[:cursor], " ")
-	if len(arg.Query) == 0 {
-		return nil, errorwrapper.New(
-			errorwrapper.Parsing,
-			errors.New("query cannot be empty"))
-	}
-
 	for cursor < len(args) {
 		key := args[cursor]
 
@@ -72,6 +69,13 @@ func (p Parser) Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper)
 		if werr != nil {
 			return nil, werr
 		}
+	}
+
+	arg.Query = strings.Join(args[:cursor], " ")
+	if len(arg.Query) == 0 {
+		return nil, errorwrapper.New(
+			errorwrapper.Parsing,
+			errors.New("query cannot be empty"))
 	}
 
 	return arg, nil

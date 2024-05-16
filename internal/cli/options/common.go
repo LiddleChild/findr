@@ -1,4 +1,4 @@
-package cli
+package options
 
 import (
 	"github.com/LiddleChild/findr/internal/core"
@@ -15,17 +15,21 @@ options
 -c               : search for content in files
 -d <dir>         : set search root directory
 
+case intensive search
+directory / file things
+concurrency
+help
 
 */
 
-type OptionMetadata struct {
+type Metadata struct {
 	Name        string
 	Usage       string
 	Description string
-	OptionNames []string
+	Flags       []string
 }
 
-type OptionHandler interface {
-	Metadata() OptionMetadata
+type Handler interface {
+	Metadata() Metadata
 	Handle(*core.Argument, []string) errorwrapper.ErrorWrapper
 }

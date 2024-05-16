@@ -1,19 +1,18 @@
 package options
 
 import (
-	"github.com/LiddleChild/findr/internal/cli"
 	"github.com/LiddleChild/findr/internal/core"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
 
 type IgnorePathOption struct{}
 
-func (opt IgnorePathOption) Metadata() cli.OptionMetadata {
-	return cli.OptionMetadata{
+func (opt IgnorePathOption) Metadata() Metadata {
+	return Metadata{
 		Name:        "ignore path",
 		Usage:       "(-i|--ignore) [path(s)]",
 		Description: "specified path(s) will be ignored while traversing, whitespace is used to separate between multiple paths",
-		OptionNames: []string{"-i", "--ignore"},
+		Flags:       []string{"-i", "--ignore"},
 	}
 }
 

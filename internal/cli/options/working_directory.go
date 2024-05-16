@@ -6,19 +6,18 @@ import (
 	"os"
 	"path"
 
-	"github.com/LiddleChild/findr/internal/cli"
 	"github.com/LiddleChild/findr/internal/core"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
 
 type WorkingDirectoryOption struct{}
 
-func (opt WorkingDirectoryOption) Metadata() cli.OptionMetadata {
-	return cli.OptionMetadata{
+func (opt WorkingDirectoryOption) Metadata() Metadata {
+	return Metadata{
 		Name:        "working directory",
 		Usage:       "(-d|--dir) <path>",
 		Description: "set working directory",
-		OptionNames: []string{"-d", "--dir"},
+		Flags:       []string{"-d", "--dir"},
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/LiddleChild/findr/internal/cli"
 	"github.com/LiddleChild/findr/internal/cli/options"
 	"github.com/LiddleChild/findr/internal/core"
+	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
 
 func main() {
@@ -26,8 +27,11 @@ func main() {
 
 	arg, werr := parser.Parse(params)
 	if werr != nil {
-		_, msg, _ := werr.Unwrap()
-		fmt.Printf("%v\nuse `findr --help` for more informations\n", msg)
+		if werr.Type() != errorwrapper.Help {
+			_, msg, _ := werr.Unwrap()
+			fmt.Printf("%v\nuse `findr --help` for more informations\n", msg)
+		}
+
 		os.Exit(0)
 	}
 

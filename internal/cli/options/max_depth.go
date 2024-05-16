@@ -4,19 +4,18 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/LiddleChild/findr/internal/cli"
 	"github.com/LiddleChild/findr/internal/core"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
 )
 
 type MaxDepthOption struct{}
 
-func (opt MaxDepthOption) Metadata() cli.OptionMetadata {
-	return cli.OptionMetadata{
+func (opt MaxDepthOption) Metadata() Metadata {
+	return Metadata{
 		Name:        "max depth",
 		Usage:       "(-mx|--max-depth) <depth>",
 		Description: "max depth of traversing, 0 means working directory",
-		OptionNames: []string{"-mx", "--max-depth"},
+		Flags:       []string{"-mx", "--max-depth"},
 	}
 }
 

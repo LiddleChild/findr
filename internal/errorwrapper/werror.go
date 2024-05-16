@@ -3,10 +3,10 @@ package errorwrapper
 type WrapperType string
 
 const (
-	Parsing   WrapperType = "Parsing"
-	Argument  WrapperType = "Argument"
-	Parameter WrapperType = "Parameter"
-	Core      WrapperType = "Core"
+	Parsing  WrapperType = "Parsing"
+	Help     WrapperType = "Help"
+	Argument WrapperType = "Argument"
+	Core     WrapperType = "Core"
 )
 
 type ErrorWrapper interface {
