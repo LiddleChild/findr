@@ -11,9 +11,9 @@ import (
 )
 
 func HandleFilenameSearch(path string, arg *Argument) errorwrapper.ErrorWrapper {
-	idx, ok := pattern.Match(path)
-	if ok {
-		highlighted := utils.HighlightByIndexes(path, idx, pattern.Len(), color.FgRed)
+	indices := pattern.Match(path)
+	if len(indices) > 0 {
+		highlighted := utils.HighlightByIndexes(path, indices, pattern.Len(), color.FgRed)
 		fmt.Printf("%s\n", strings.TrimSpace(highlighted))
 	}
 
@@ -29,14 +29,14 @@ func handleContentSearch(path string, _ *Argument) errorwrapper.ErrorWrapper {
 			"error occured while opening file")
 	}
 
-	snippets, ok, err := pattern.MatchFile(f)
+	snippets, err := pattern.MatchFile(f)
 	if err != nil {
 		return errorwrapper.NewWithMessage(
 			errorwrapper.Core,
 			err,
 			"error occured while reading file")
-	} else if ok {
-		fmt.Println(path)
+	} else if len(snippets) > 0 {
+		color.New(color.FgHiBlack).Println(path)
 		for _, snip := range snippets {
 			highlighted := utils.HighlightByIndexes(snip.Text, snip.Col, pattern.Len(), color.FgRed)
 			fmt.Printf("Ln %d: %s\n", snip.Line, strings.TrimSpace(highlighted))

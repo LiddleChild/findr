@@ -6,8 +6,8 @@ import (
 	"github.com/fatih/color"
 )
 
-func HighlightByIndexes(content string, index []int, size int, attr color.Attribute) string {
-	if len(index) == 0 {
+func HighlightByIndexes(content string, indices []int, size int, attr color.Attribute) string {
+	if len(indices) == 0 {
 		return content
 	}
 
@@ -17,13 +17,13 @@ func HighlightByIndexes(content string, index []int, size int, attr color.Attrib
 
 	var builder strings.Builder
 	lastIndex := 0
-	for i, idx := range index {
-		writeRunes(&builder, rs[lastIndex:idx])
-		builder.WriteString(highlighter(string(rs[idx : idx+size])))
-		lastIndex = i + size
+	for _, index := range indices {
+		writeRunes(&builder, rs[lastIndex:index])
+		builder.WriteString(highlighter(string(rs[index : index+size])))
+		lastIndex = index + size
 	}
 
-	writeRunes(&builder, rs[index[len(index)-1]+size:])
+	writeRunes(&builder, rs[indices[len(indices)-1]+size:])
 
 	return builder.String()
 }

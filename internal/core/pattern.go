@@ -9,7 +9,7 @@ import (
 )
 
 type Pattern struct {
-	pattern string
+	pattern []rune
 	lps     []int
 }
 
@@ -34,136 +34,99 @@ func CreatePattern(pattern string) *Pattern {
 	}
 
 	return &Pattern{
-		pattern,
+		[]rune(pattern),
 		lps,
 	}
 }
 
-func (p *Pattern) Match(content string) ([]int, bool) {
-	content = strings.ToLower(content)
-	index := make([]int, 0)
-	if len(p.lps) == 0 {
-		return index, true
-	}
-
-	contentLen := len(content)
-	pattern, lps := p.pattern, p.lps
+func (p Pattern) Match(content string) []int {
+	contentRunes := []rune(strings.ToLower(content))
+	indices := make([]int, 0)
 
 	i, j := 0, 0
-	for i < contentLen {
-		if pattern[j] == content[i] {
-			i++
-			j++
-		}
-
-		if j == len(pattern) {
-			index = append(index, i-j)
-			j = lps[j-1]
-		} else if i < contentLen && pattern[j] != content[i] {
-			if j != 0 {
-				j = lps[j-1]
+	for i < len(content) {
+		if contentRunes[i] == p.pattern[j] {
+			if j == p.Len()-1 {
+				indices = append(indices, i-j)
+				j = p.lps[j-1]
 			} else {
-				i = i + 1
+				i++
+				j++
+			}
+		} else {
+			if j > 0 {
+				j = p.lps[j-1]
+			} else if i < len(content) {
+				i++
 			}
 		}
 	}
 
-	if len(index) == 0 {
-		return index, false
-	}
-
-	return index, true
+	return indices
 }
 
-func (p *Pattern) MatchFile(file *os.File) ([]Snippet, bool, error) {
-	if len(p.lps) == 0 {
-		return nil, true, nil
-	}
-
+func (p Pattern) MatchFile(file *os.File) ([]Snippet, error) {
 	snippets := make([]Snippet, 0)
 
-	pattern, lps := []rune(p.pattern), p.lps
+	reader := utils.NewReader(file)
 
-	br := utils.NewReader(file)
-	r, i, j := unicode.ToLower(br.NextRune()), 0, 0
-
+	ln := 1
 	var sb strings.Builder
-	indexLF := -1
-	line := 1
-	waiting := false // waiting for new line to finish snippet
+	newlineIndex := -1
+	needResolve := false
 
-	completeLine := func() {
+	i, j := 0, 0
+	r := reader.NextRune()
+	sb.WriteRune(r)
+
+	next := func() {
+		r = reader.NextRune()
+		sb.WriteRune(r)
+		i++
+
 		if r == '\n' {
-			if waiting {
-				snippets[len(snippets)-1].Text = sb.String()
-				for i := range len(snippets[len(snippets)-1].Col) {
-					snippets[len(snippets)-1].Col[i] -= indexLF + 1
-				}
+			if needResolve {
+				utils.Last(snippets).Text = sb.String()
+				needResolve = false
 			}
 
-			waiting = false
+			newlineIndex = i
+			ln++
 			sb.Reset()
-			indexLF = i
-			line++
 		}
 	}
 
-	for !br.IsEOF() {
-		if br.Error() != nil {
-			return nil, false, br.Error()
-		}
-
-		if pattern[j] == r {
-			r = unicode.ToLower(br.NextRune())
-			i++
-			if r != '\n' && r != '\r' {
-				sb.WriteRune(r)
-			}
-
-			j++
-		}
-
-		if j == len(pattern) {
-			if len(snippets) > 0 && snippets[len(snippets)-1].Line == line {
-				snippets[len(snippets)-1].Col = append(
-					snippets[len(snippets)-1].Col,
-					i-j)
-
-			} else {
-				snippets = append(
-					snippets,
-					Snippet{
-						Col:  []int{i - j},
-						Line: line,
+	for !reader.IsEOF() {
+		if unicode.ToLower(r) == p.pattern[j] {
+			if j == p.Len()-1 {
+				if len(snippets) == 0 || !needResolve {
+					snippets = append(snippets, Snippet{
+						Line: ln,
+						Col:  []int{i - j - newlineIndex - 1},
 					})
-			}
-
-			waiting = true
-			completeLine()
-
-			j = lps[j-1]
-		} else if !br.IsEOF() && pattern[j] != r {
-			if j != 0 {
-				j = lps[j-1]
-			} else {
-				r = unicode.ToLower(br.NextRune())
-				i++
-				if r != '\n' && r != '\r' {
-					sb.WriteRune(r)
+				} else {
+					last := utils.Last(snippets)
+					last.Col = append(last.Col, i-j-newlineIndex-1)
 				}
 
-				completeLine()
+				needResolve = true
+				j = p.lps[j-1]
+			} else {
+				next()
+				j++
+			}
+		} else {
+			if j > 0 {
+				j = p.lps[j-1]
+			} else if !reader.IsEOF() {
+				next()
 			}
 		}
 	}
 
-	if len(snippets) == 0 {
-		return snippets, false, nil
-	}
-
-	return snippets, true, nil
+	return snippets, nil
 }
 
-func (p *Pattern) Len() int {
+func (p Pattern) Len() int {
 	return len(p.pattern)
 }
