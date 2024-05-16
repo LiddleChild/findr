@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/LiddleChild/findr/internal/core"
 	"github.com/LiddleChild/findr/internal/errorwrapper"
@@ -30,7 +31,7 @@ func WorkingDirectoryHandler(arg *core.Argument, values []string) errorwrapper.E
 			fmt.Sprintf("-d: %v is not a directory", dir))
 	}
 
-	arg.WorkingDirectory = dir
+	arg.WorkingDirectory = path.Join(arg.WorkingDirectory, dir)
 
 	return nil
 }

@@ -18,7 +18,10 @@ func Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper) {
 
 	pwd, err := os.Getwd()
 	if err != nil {
-		os.Exit(1)
+		return nil, errorwrapper.NewWithMessage(
+			errorwrapper.Parsing,
+			err,
+			"error occured while getting current working directory")
 	}
 
 	arg := core.DefaultArgument()
