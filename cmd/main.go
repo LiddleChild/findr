@@ -15,8 +15,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	// กขค int
-
 	params := os.Args[1:]
 
 	parser := cli.NewParser(
