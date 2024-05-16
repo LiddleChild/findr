@@ -46,6 +46,7 @@ func (p Parser) Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper)
 
 	arg := core.DefaultArgument()
 	arg.WorkingDirectory = pwd
+	arg.Query = strings.Join(args[:cursor], " ")
 
 	for cursor < len(args) {
 		key := args[cursor]
@@ -71,7 +72,6 @@ func (p Parser) Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper)
 		}
 	}
 
-	arg.Query = strings.Join(args[:cursor], " ")
 	if len(arg.Query) == 0 {
 		return nil, errorwrapper.New(
 			errorwrapper.Parsing,
