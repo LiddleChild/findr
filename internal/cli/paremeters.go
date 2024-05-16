@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -22,7 +23,13 @@ func Parse(args []string) (*core.Argument, errorwrapper.ErrorWrapper) {
 
 	arg := core.DefaultArgument()
 	arg.WorkingDirectory = pwd
+
 	arg.Query = strings.Join(args[:cursor], " ")
+	if len(arg.Query) == 0 {
+		return nil, errorwrapper.New(
+			errorwrapper.Parsing,
+			errors.New("query cannot be empty"))
+	}
 
 	for cursor < len(args) {
 		key := args[cursor]
