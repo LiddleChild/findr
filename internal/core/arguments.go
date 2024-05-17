@@ -1,5 +1,7 @@
 package core
 
+import "runtime"
+
 type Argument struct {
 	Query            string
 	MaxDepth         int
@@ -7,6 +9,7 @@ type Argument struct {
 	WorkingDirectory string
 	IgnoredPaths     map[string]bool
 	CaseSensitive    bool
+	NumWorkers       int
 }
 
 func DefaultArgument() *Argument {
@@ -17,5 +20,6 @@ func DefaultArgument() *Argument {
 		WorkingDirectory: "",
 		IgnoredPaths:     map[string]bool{},
 		CaseSensitive:    false,
+		NumWorkers:       runtime.NumCPU(),
 	}
 }
