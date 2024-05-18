@@ -12,7 +12,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("usage: findr <query> <options>")
+		fmt.Println("usage: findr <query> [options]")
 		os.Exit(0)
 	}
 
