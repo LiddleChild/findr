@@ -19,6 +19,7 @@ func main() {
 	params := os.Args[1:]
 
 	parser := cli.NewParser(
+		&options.HelpOption{},
 		&options.ContentSearchOption{},
 		&options.IgnorePathOption{},
 		&options.MaxDepthOption{},
